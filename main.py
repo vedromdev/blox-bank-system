@@ -8,12 +8,32 @@ from discord.ext import commands
 from aiohttp import web
 
 # ----------------- CONFIGURATION -----------------
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
-VERIFICATION_CHANNEL_ID = int(os.environ.get("VERIFICATION_CHANNEL_ID", "123456789012345678"))
+# Load from environment variables (or .env if present)
+if os.path.exists(".env"):
+    with open(".env") as f:
+        for line in f:
+            if "=" in line and not line.startswith("#"):
+                k, v = line.strip().split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip().strip('"').strip("'")
+raw_channel = os.environ.get("VERIFICATION_CHANNEL_ID", "0").strip().strip('"').strip("'")
+try:
+    VERIFICATION_CHANNEL_ID = int(raw_channel)
+except ValueError:
+    VERIFICATION_CHANNEL_ID = 0
+
 BASE_PAY = 1000       # Base pay when quota is hit
 BONUS_RATE = 500      # Extra bonus per 30 mins over quota
 DEFAULT_QUOTA = 120   # 120 minutes weekly quota
 DB_FILE = "bank_data.db"
+
+if not BOT_TOKEN or BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
+    print("\n" + "="*50)
+    print("❌ ERROR: BOT_TOKEN is not set or invalid!")
+    print("👉 Set the BOT_TOKEN variable in the 'Startup' tab of your Bot-Hosting panel,")
+    print("   or upload a .env file with BOT_TOKEN=your_token.")
+    print("="*50 + "\n")
 # -------------------------------------------------
 
 # ----------------- DATABASE SETUP -----------------
