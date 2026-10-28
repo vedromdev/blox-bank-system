@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.env
+bank_data.db
+.DS_Store
